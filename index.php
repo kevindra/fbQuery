@@ -16,7 +16,11 @@
       }
 
       function cHandler() {
-        fb.user.getUserInfoByUid('kevindra.singh');
+        fb.user.getUserInfo({ uid: 'kevindra.singh', callback: function(response){
+            alert(response.name);
+            fb.debug.printObj(response);
+          }
+        });
       }
     </script>
   </head>

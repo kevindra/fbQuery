@@ -73,10 +73,14 @@ if(!window.fb) fb = {
 
   //User Package
   user : {
-    getUserInfo: function  ( uid ) {
-      FB.api('/'+uid, function(response) {
-        alert(response.name);
-      });
+    getUserInfo: function  ( params ) {
+      try {
+        FB.api('/'+params.uid, function(response) {
+          try {
+            params.callback(response);
+          } catch(ex) { console.log(ex); }
+        });
+      } catch(ex) { console.log(ex); }
     }
   },
 
@@ -92,8 +96,11 @@ if(!window.fb) fb = {
   debug : {
     printObj  : function  ( obj ) {
       for(idx in obj) {
-        if( typeof obj[idx] == Object || typeof obj[idx] == Array) fb.debug.printObj(obj[idx]);
-        else console.log(idx + " -> " + obj[idx] + "\n");
+        if( typeof(obj[idx]) == 'object' || typeof obj[idx] == Array) {
+          console.log(idx + " -> \n");
+          fb.debug.printObj(obj[idx]);
+        }
+        else console.log(idx + " -> " + obj[idx] + "\n"); 
       }
     }
   }
