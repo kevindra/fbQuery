@@ -7,12 +7,12 @@ if(!window.fb) fb = {
     status: true, 
     cookie: true, 
     xfbml: true,
-    perms:'read_stream,publish_stream,offline_access',
+    perms: '',
     postLogin: console.log
   },
   session : '',
   init: function(options) {
-    if(options == undefined || options.appId == undefined) { console.log('Please provide appId in fb.init function. Usage: fb.init({appId: <your app id>}'); }
+    if(options == undefined || options.appId == undefined) { console.error('Please provide appId in fb.init function. Usage: fb.init({appId: <your app id>}'); }
 
     if(!fb.options) fb.options = fb.helpers.extend(fb.defaults, options);
 
@@ -29,8 +29,8 @@ if(!window.fb) fb = {
       '//connect.facebook.net/'+ fb.options.locale +
       '/all.js';
       s.type  = 'text/javascript';
-      document.getElementById('fb-root').appendChild(s);
-    } catch(ex) { alert('here'+ex); console.log(ex); }
+      body.appendChild(s);
+    } catch(ex) { alert('here'+ex); console.warn(ex); }
   },
   
   // FB Async Init
@@ -52,16 +52,16 @@ if(!window.fb) fb = {
           if (response.perms) {
             // user is logged in and granted some permissions.
             // perms is a comma separated list of granted permissions
-            fb.options.postLogin('logged in and grant permissions');
+            alert('logged in and grant permissions');
           } else {
             // user is logged in, but did not grant any permissions 
-            fb.options.postLogin('logged in but didnt grant permissions');
+            alert('logged in but didnt grant permissions');
           }
         } else {
           // user is not logged in
-          fb.options.postLogin('not logged in');
+          alert('not logged in');
         }
-      }, options.perms);
+      }, {'perms': options.perms} );
 
       session = FB.getSession();
     }
@@ -75,15 +75,118 @@ if(!window.fb) fb = {
   user : {
     getUserInfo: function  ( params ) {
       try {
-        FB.api('/'+params.uid, function(response) {
+        FB.api('/'+params.user, function(response) {
           try {
             params.callback(response);
-          } catch(ex) { console.log(ex); }
+          } catch(ex) { console.warn(ex); }
         });
-      } catch(ex) { console.log(ex); }
-    }
-  },
+      } catch(ex) { console.warn(ex); }
+    },
+    /** Only returns the lists of friends not friends **/
+    getFriendLists: function  ( params  ) {
+      try {
+        FB.login ( function(response) {
+          if(response.session && response.perms) {
+            FB.api('/' + params.user + '/friendlists', function(response)  {
+              params.callback(response);
+            });
+          }
+        }, {perms: 'read_friendlists'});
+      } catch(ex) { console.warn(ex);  }
+    },
+    /** Returns the set of objects of friends **/
+    getFriends: function  ( params  ) {
+      try {
+        FB.login( function(response)  {
+          if(response.session && response.perms)  {
+            FB.api('/' + params.user + '/friends',  function(response)  {
+              params.callback(response);
+            });
+          }
+        },  { perms:  'read_friendlists'} );
+      } catch(ex) { console.warn(ex); }
+    },
+    
+    getAlbums : function  ( params  ) {
+      try {
+        FB.login( function(response)  {
+          if(response.session && response.perms)  {
+            FB.api('/' + params.user + '/albums',  function(response)  {
+              params.callback(response);
+            });
+          }
+        },  { perms:  'user_photos'} );
+      } catch(ex) { console.warn(ex); }
+    },
 
+    /** Get Photos uploaded by user, categorized album wise **/ 
+    getPhotos :  function ( params  ) {
+      try {
+        FB.login( function(response)  {
+          if(response.session && response.perms)  {
+            FB.api('/' + params.user + '/photos',  function(response)  {
+              params.callback(response);
+            });
+          }
+        },  { perms:  'user_photos,user_photo_video_tags'} );
+      } catch(ex) { console.warn(ex); }
+    },
+
+    /** Get posts from the user **/
+    getPosts  : function  ( params  ) {
+      try {
+        FB.login( function(response)  {
+          if(response.session && response.perms)  {
+            FB.api('/' + params.user + '/posts',  function(response)  {
+              params.callback(response);
+            });
+          }
+        },  { perms:  'read_stream'} );
+      } catch(ex) { console.warn(ex); }
+    },
+
+    /** Get status messages from the user **/
+    getStatuses : function  ( params  ) {
+      try {
+        FB.login( function(response)  {
+          if(response.session && response.perms)  {
+            FB.api('/' + params.user + '/statuses',  function(response)  {
+              params.callback(response);
+            });
+          }
+        },  { perms:  'read_stream'} );
+      } catch(ex) { console.warn(ex); }
+    },
+
+    /** Get Profile Picture **/
+    getProfilePicture:  function  (params)  {
+      if(params.user == 'me') params.uid = fb.session.uid;
+
+      if(params.uid) {
+        FB.api({
+          method: 'fql.query',
+          query:  "SELECT pic_square FROM user WHERE uid = " + params.uid
+        },
+        function (response) {
+          params.callback(response);
+        });
+      }
+      else  {
+        FB.api({
+          method: 'fql.query',
+          query:  "SELECT pic_square FROM user WHERE username = '" + params.user + "'"
+        },
+        function (response) {
+          params.callback(response);
+        });
+      }
+    }
+
+
+
+  },//User package ends.
+ 
+ 
   // Helpers Package
   helpers : {
     extend : function ( obj1, obj2 )  {
@@ -94,14 +197,8 @@ if(!window.fb) fb = {
   },
 
   debug : {
-    printObj  : function  ( obj ) {
-      for(idx in obj) {
-        if( typeof(obj[idx]) == 'object' || typeof obj[idx] == Array) {
-          console.log(idx + " -> \n");
-          fb.debug.printObj(obj[idx]);
-        }
-        else console.log(idx + " -> " + obj[idx] + "\n"); 
-      }
+    printObj  : function  (obj) {
+      console.dir(obj);
     }
   }
 }
