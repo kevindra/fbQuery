@@ -1,0 +1,121 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://www.facebook.com/2008/fbml">
+
+  <head>
+  <title>winefriends</title>
+    <meta property="og:title" content="Story Bar"/>
+    <meta property="og:type" content="bar"/>
+    <meta property="og:image" content="http://profile.ak.fbcdn.net/hprofile-ak-snc4/hs355.snc4/41800_157551267602956_958536_n.jpg"/>
+    <meta property="og:site_name" content="winefriends"/>
+    <meta property="fb:app_id" content="158476644202716"> <!-- Replace app id with your own-->
+    <meta property="og:description" content="Share a story and enjoy a glass of wine."/>
+
+    <meta charset="utf-8">
+    <title>
+    </title>
+    <meta name="description" content="Cozy Test FB">
+    <script src='js/fbQuery.js'></script>
+    <!--script src="http://static.ak.connect.facebook.com/js/api_lib/v0.4/FeatureLoader.js.php" type="text/javascript"></script--> 
+    <script type='text/javascript'> 
+      function onload() {
+        var options = {
+          appId: "158476644202716", postLogin: alert
+        };
+        fb.init(options);
+      }
+
+      function cHandler() {
+        fb.user.getUserInfo({ user: 'me', callback: function(response){
+            alert(response.name);
+            fb.debug.printObj(response);
+          }
+        });
+      }
+      
+      function getFriendLists() {
+        fb.user.getFriendLists({
+          user: 'me',
+          callback: function (response) {
+            fb.debug.printObj(response);
+          }
+        });
+      }
+
+      function getFriends() {
+        fb.user.getFriends({
+          user: 'me',
+          callback: function (response) {
+            fb.debug.printObj(response);
+          }
+        });
+      }
+    
+      function getAlbums()  {
+        fb.user.getAlbums({
+          user: 'me',
+          callback: function  (response)  {
+            fb.debug.printObj(response);
+          }
+        });
+      }
+
+      function getPhotos()  {
+        fb.user.getPhotos({
+          user: 'me',
+          callback: function  (response)  {
+            fb.debug.printObj(response);
+          }
+        });
+      }
+
+      function getPosts() {
+        fb.user.getPosts({
+          user: 'me',
+          callback: function  (response)  {
+            fb.debug.printObj(response);
+          }
+        });
+      }
+
+
+      function getStatuses() {
+        fb.user.getStatuses({
+          user: 'me',
+          callback: function  (response)  {
+            fb.debug.printObj(response);
+          }
+        });
+      }
+
+
+      function getProfilePicture() {
+        fb.user.getProfilePicture({
+          user: 'me',
+          type: 'small|middle|large',
+          callback: function  (response)  {
+            fb.debug.printObj(response);
+          }
+        });
+      }
+    </script>
+  </head>
+
+  <body onload='onload()'>
+    <script type='text/javascript'>
+      window.fbAsyncInit =  function() {
+        // Call FB Async Init
+        fb.fbAsyncInit();
+      }
+    </script>
+    adasdasd
+    <input type='button' onClick="cHandler()" value='Get Username' />
+    <input type='button' onClick="getFriendLists()" value='Get FriendLists' />
+    <input type='button' onClick="getFriends()" value='Get Friends' />
+    <input type='button' onClick="getAlbums()" value='Get Albums' />
+    <input type='button' onClick="getPhotos()" value='Get Photos' />
+    <input type='button' onClick="getPosts()" value='Get Posts' />
+    <input type='button' onClick="getStatuses()" value='Get Statuses' />
+    <input type='button' onClick="getProfilePicture()" value='Get Profile Picture' />
+  </body>
+
+</html>
